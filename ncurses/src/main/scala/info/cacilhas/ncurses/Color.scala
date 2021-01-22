@@ -1,9 +1,27 @@
 package info.cacilhas.ncurses
 
-import scala.scalanative.unsafe.CShort
+import scala.scalanative.libc.stdlib.{free, malloc}
+import scala.scalanative.unsafe.{CShort, Ptr, sizeof}
 import scala.util.chaining.scalaUtilChainingOps
 
 final class Color private(val value: Int) extends AnyVal {
+
+  def content: (Double, Double, Double) = {
+    val r = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
+    val g = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
+    val b = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
+
+    try {
+      nassert(lowlevel color_content (%(value), r, g, b)).toTry.get
+      (!r / 1000.0, !g / 1000.0, !b / 1000.0)
+
+    }
+    finally {
+      free(r.asInstanceOf[Ptr[Byte]])
+      free(g.asInstanceOf[Ptr[Byte]])
+      free(b.asInstanceOf[Ptr[Byte]])
+    }
+  }
 
   def init(red: Double, green: Double, blue: Double): Int =
     nassert(lowlevel init_color (%(value), %(red), %(green), %(blue))).toTry.get
@@ -14,7 +32,7 @@ final class Color private(val value: Int) extends AnyVal {
       case Left(exc) => throw exc
     }
 
-  def pair: Color.Pair = lowlevel COLOR_PAIR %(value)
+  def pair: Color.Pair = lowlevel.COLOR_PAIR(value).toShort
 
   private def %(value: Double): CShort = (1000 * value).toShort
 
@@ -23,12 +41,14 @@ final class Color private(val value: Int) extends AnyVal {
 
 object Color {
 
-  type Pair = Int
+  type Pair = Short
 
   implicit def apply(value: Int): Color = new Color(value)
 
   def apply(value: Int, red: Double, green: Double, blue: Double): Color =
     apply(value) tap {_ init (red, green, blue)}
+
+  def changeable: Boolean = lowlevel.can_change_color()
 
   def start: Int = nassert(_start).toTry.get
 
