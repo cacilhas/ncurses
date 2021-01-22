@@ -8,6 +8,9 @@ private object lowlevel {
 
   type WINDOW = extern
 
+  @name("SLcurses_Acs_Map")
+  val acs_map: Array[UWord] = extern
+
   def cbreak(): CInt = extern
 
   def COLOR_PAIR(value: CInt): CInt = extern

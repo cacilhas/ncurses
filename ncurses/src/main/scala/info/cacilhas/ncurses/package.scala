@@ -6,7 +6,9 @@ import scala.scalanative.unsafe
 import scala.util.Try
 
 package object ncurses {
-  lazy val version: String = unsafe.fromCString(lowlevel.curses_version())
+
+  lazy val acs: Seq[Char]  = Option(lowlevel.acs_map) map {_.toSeq} getOrElse Nil map {_.toChar}
+  lazy val version: String = unsafe fromCString lowlevel.curses_version()
 
   def cbreak(enable: Boolean): Throwable Either Int =
     nassert(if (enable) lowlevel.cbreak() else lowlevel.nocbreak())
