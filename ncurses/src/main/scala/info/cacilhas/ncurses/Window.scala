@@ -1,10 +1,17 @@
 package info.cacilhas.ncurses
 
-import info.cacilhas.ncurses.lowlevel.WINDOW
+import info.cacilhas.ncurses.lowlevel_h.WINDOW
 
 import scala.scalanative.unsigned.UnsignedRichLong
 
 final class Window private(win: WINDOW) {
+
+  def attron(attr: Int, enable: Boolean = true): Unit = {
+    if (enable) lowlevel wattron  (win, attr)
+    else        lowlevel wattroff (win, attr)
+  }
+
+  def attroff(attr: Int): Unit = attron(attr, enable = false)
 
   def clear(): Unit = lowlevel wclear win
 

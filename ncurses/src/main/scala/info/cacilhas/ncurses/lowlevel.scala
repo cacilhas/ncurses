@@ -6,15 +6,21 @@ import scala.scalanative.unsafe._
 @extern
 private object lowlevel {
 
-  type WINDOW = Ptr[CChar]
+  import lowlevel_h.WINDOW
 
   def cbreak(): CInt = extern
+
+  def COLOR_PAIR(value: CInt): CInt = extern
 
   def curses_version(): CString = extern
 
   def echo(): CInt = extern
 
   def endwin(): CInt = extern
+
+  def init_color(idx: CShort, red: CShort, green: CShort, blue: CShort): CInt = extern
+
+  def init_pair(idx: CShort, foreground: CShort, background: CShort): CInt = extern
 
   def initscr(): WINDOW = extern
 
@@ -33,6 +39,12 @@ private object lowlevel {
   def noecho(): CInt = extern
 
   def nonl(): CInt = extern
+
+  def start_color(): CInt = extern
+
+  def wattroff(window: WINDOW, attr: CInt): CInt = extern
+
+  def wattron(window: WINDOW, attr: CInt): CInt = extern
 
   def wclear(window: WINDOW): CInt = extern
 
