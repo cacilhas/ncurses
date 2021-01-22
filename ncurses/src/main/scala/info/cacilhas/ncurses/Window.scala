@@ -1,10 +1,12 @@
 package info.cacilhas.ncurses
 
+import scala.scalanative.unsafe.Ptr
+
 import info.cacilhas.ncurses.lowlevel.WINDOW
 
 import scala.scalanative.unsigned.UnsignedRichLong
 
-final class Window private(win: WINDOW) {
+final class Window private(win: Ptr[WINDOW]) {
 
   assert(win != null, "could not initialise screen")
 

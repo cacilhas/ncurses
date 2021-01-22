@@ -15,13 +15,13 @@ private object lowlevel {
 
   def beep(): CInt = extern
 
-  def box(window: WINDOW, vert: UWord, hor: UWord): CInt = extern
+  def box(window: Ptr[WINDOW], vert: UWord, hor: UWord): CInt = extern
 
   def can_change_color(): CBool = extern
 
   def cbreak(): CInt = extern
 
-  def clearok(window: WINDOW, bf: CBool): CInt = extern
+  def clearok(window: Ptr[WINDOW], bf: CBool): CInt = extern
 
   def color_content(idx: CShort, r: Ptr[CShort], g: Ptr[CShort], b: Ptr[CShort]): CInt = extern
 
@@ -43,15 +43,15 @@ private object lowlevel {
 
   def init_pair(idx: CShort, fg: CShort, bg: CShort): CInt = extern
 
-  def initscr(): WINDOW = extern
+  def initscr(): Ptr[WINDOW] = extern
 
-  def keypad(window: WINDOW, enable: CBool): CInt = extern
+  def keypad(window: Ptr[WINDOW], enable: CBool): CInt = extern
 
-  def mvwaddch(window: WINDOW, y: CInt, x: CInt, ch: UWord): CInt = extern
+  def mvwaddch(window: Ptr[WINDOW], y: CInt, x: CInt, ch: UWord): CInt = extern
 
-  def mvwdelch(window: WINDOW, y: CInt, x: CInt): CInt = extern
+  def mvwdelch(window: Ptr[WINDOW], y: CInt, x: CInt): CInt = extern
 
-  def newwin(nlines: CInt, ncols: CInt, y0: CInt, x0: CInt): WINDOW = extern
+  def newwin(nlines: CInt, ncols: CInt, y0: CInt, x0: CInt): Ptr[WINDOW] = extern
 
   def nl(): CInt = extern
 
@@ -59,7 +59,7 @@ private object lowlevel {
 
   def nocbreak(): CInt = extern
 
-  def nodelay(window: WINDOW, enable: Boolean): CInt = extern
+  def nodelay(window: Ptr[WINDOW], enable: Boolean): CInt = extern
 
   def noecho(): CInt = extern
 
@@ -75,19 +75,19 @@ private object lowlevel {
 
   def start_color(): CInt = extern
 
-  def wattroff(window: WINDOW, attr: CInt): CInt = extern
+  def wattroff(window: Ptr[WINDOW], attr: CInt): CInt = extern
 
-  def wattron(window: WINDOW, attr: CInt): CInt = extern
+  def wattron(window: Ptr[WINDOW], attr: CInt): CInt = extern
 
-  def wchgat(window: WINDOW, n: CInt, attr: UWord, color: CShort, opts: Ptr[Byte]): CInt = extern
+  def wchgat(window: Ptr[WINDOW], n: CInt, attr: UWord, color: CShort, opts: Ptr[Byte]): CInt = extern
 
-  def wclear(window: WINDOW): CInt = extern
+  def wclear(window: Ptr[WINDOW]): CInt = extern
 
-  def wcrltobot(window: WINDOW): CInt = extern
+  def wcrltobot(window: Ptr[WINDOW]): CInt = extern
 
-  def wcrltoeol(window: WINDOW): CInt = extern
+  def wcrltoeol(window: Ptr[WINDOW]): CInt = extern
 
-  def wdelch(window: WINDOW): CInt = extern
+  def wdelch(window: Ptr[WINDOW]): CInt = extern
 
-  def wrefresh(window: WINDOW): CInt = extern
+  def wrefresh(window: Ptr[WINDOW]): CInt = extern
 }
