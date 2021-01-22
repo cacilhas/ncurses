@@ -1,6 +1,6 @@
 package info.cacilhas.ncurses
 
-import info.cacilhas.ncurses.lowlevel_h.WINDOW
+import info.cacilhas.ncurses.lowlevel.WINDOW
 
 import scala.scalanative.unsigned.UnsignedRichLong
 

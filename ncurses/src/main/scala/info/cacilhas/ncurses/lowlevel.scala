@@ -6,7 +6,7 @@ import scala.scalanative.unsafe._
 @extern
 private object lowlevel {
 
-  import lowlevel_h.WINDOW
+  type WINDOW = extern
 
   def cbreak(): CInt = extern
 

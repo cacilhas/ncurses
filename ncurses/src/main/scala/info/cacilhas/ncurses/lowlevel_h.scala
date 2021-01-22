@@ -4,8 +4,6 @@ import scala.scalanative.unsafe._
 
 object lowlevel_h {
 
-  type WINDOW = Ptr[CChar]
-
   val COLOR_BLACK: CInt   = 0
   val COLOR_RED: CInt     = 1
   val COLOR_GREEN: CInt   = 2
