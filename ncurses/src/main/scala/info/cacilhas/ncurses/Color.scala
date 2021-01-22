@@ -50,7 +50,9 @@ object Color {
 
   def changeable: Boolean = lowlevel.can_change_color()
 
-  def start: Int = nassert(_start).toTry.get
+  lazy val start: Int =
+    if (lowlevel.has_colors()) nassert(_start).toTry.get
+    else throw new AssertionError("no colour support found")
 
   private lazy val _start: Int = lowlevel.start_color()
 

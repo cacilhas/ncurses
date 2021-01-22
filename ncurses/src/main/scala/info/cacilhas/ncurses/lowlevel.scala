@@ -47,11 +47,39 @@ private object lowlevel {
 
   def endwin(): CInt = extern
 
+  def flash(): CInt = extern
+
+  def flushinp(): CInt = extern
+
+  def getbkgd(win: Ptr[WINDOW]): UWord = extern
+
+  def getch(): CInt = extern
+
+  def getstr(str: CString): CInt = extern
+
+  def getwin(filep: Ptr[FILE]): Ptr[WINDOW] = extern
+
+  def has_colors(): CBool = extern
+
+  def has_ic(): CBool = extern
+
+  def has_il(): CBool = extern
+
+  def idlok(win: Ptr[WINDOW], bf: CBool): CInt = extern
+
+  def immedok(win: Ptr[WINDOW], bf: CBool): CInt = extern
+
   def init_color(idx: CShort, r: CShort, g: CShort, b: CShort): CInt = extern
 
   def init_pair(idx: CShort, fg: CShort, bg: CShort): CInt = extern
 
   def initscr(): Ptr[WINDOW] = extern
+
+  def is_linetouched(win: Ptr[WINDOW], line: CInt): CBool = extern
+
+  def is_wintouched(win: Ptr[WINDOW]): CBool = extern
+
+  def keyname(c: CInt): CString = extern
 
   def keypad(win: Ptr[WINDOW], enable: CBool): CInt = extern
 
@@ -59,21 +87,45 @@ private object lowlevel {
 
   def mvwdelch(win: Ptr[WINDOW], y: CInt, x: CInt): CInt = extern
 
+  def mvwgetch(win: Ptr[WINDOW], y: CInt, x: CInt): CInt = extern
+
+  def mvwgetnstr(win: Ptr[WINDOW], y: CInt, x: CInt, str: CString, n: CInt): CInt = extern
+
+  def mvwhline(win: Ptr[WINDOW], y: CInt, x: CInt, ch: UWord, n: CInt): CInt = extern
+
+  def mvwinnstr(win: Ptr[WINDOW], y: CInt, x: CInt, str: CString, n: CInt): CInt = extern
+
+  def mvwvline(win: Ptr[WINDOW], y: CInt, x: CInt, ch: UWord, n: CInt): CInt = extern
+
   def newwin(nlines: CInt, ncols: CInt, y0: CInt, x0: CInt): Ptr[WINDOW] = extern
 
   def nl(): CInt = extern
 
   def napms(ms: CInt): CInt = extern
 
+  def newpad(nlines: CInt, ncols: CInt): Ptr[WINDOW] = extern
+
   def newterm(tpe: CString, outfd: Ptr[FILE], infd: Ptr[FILE]): Ptr[SCREEN] = extern
 
   def nocbreak(): CInt = extern
 
-  def nodelay(win: Ptr[WINDOW], enable: Boolean): CInt = extern
+  def nodelay(win: Ptr[WINDOW], enable: CBool): CInt = extern
 
   def noecho(): CInt = extern
 
   def nonl(): CInt = extern
+
+  def noraw(): CInt = extern
+
+  def notimeout(win: Ptr[WINDOW], bf: CBool): CInt = extern
+
+  def overlay(scrwin: Ptr[WINDOW], dstwin: Ptr[WINDOW]): CInt = extern
+
+  def putwin(win: Ptr[WINDOW], filep: Ptr[FILE]): CInt = extern
+
+  def raw(): CInt = extern
+
+  def redrawwin(win: Ptr[WINDOW]): CInt = extern
 
   def reset_prog_mode(): CInt = extern
 
@@ -83,9 +135,27 @@ private object lowlevel {
 
   def savetty(): CInt = extern
 
+  def scr_dump(filename: CString): CInt = extern
+
+  def scr_restore(filename: CString): CInt = extern
+
+  def scrollok(win: Ptr[WINDOW], bf: CBool): CInt = extern
+
   def set_term(scr: Ptr[SCREEN]): Ptr[SCREEN] = extern
 
+  def setterm(term: CString): CInt = extern
+
   def start_color(): CInt = extern
+
+  def termname(): CString = extern
+
+  def touchline(win: Ptr[WINDOW], start: CInt, count: CInt): CInt = extern
+
+  def touchwin(win: Ptr[WINDOW]): CInt = extern
+
+  def untouchline(win: Ptr[WINDOW], start: CInt, count: CInt): CInt = extern
+
+  def untouchwin(win: Ptr[WINDOW]): CInt = extern
 
   def use_screen(scr: Ptr[SCREEN], cb: NCURSES_SCREEN_CB, data: Ptr[Byte]): CInt = extern
 
@@ -105,5 +175,21 @@ private object lowlevel {
 
   def wdelch(win: Ptr[WINDOW]): CInt = extern
 
+  def wdeleteln(win: Ptr[WINDOW]): CInt = extern
+
+  def wgetch(win: Ptr[WINDOW]): CInt = extern
+
+  def winsdelln(win: Ptr[WINDOW], n: CInt): CInt = extern
+
+  def winsertln(win: Ptr[WINDOW]): CInt = extern
+
+  def werase(win: Ptr[WINDOW]): CInt = extern
+
   def wrefresh(win: Ptr[WINDOW]): CInt = extern
+
+  def wresize(win: Ptr[WINDOW], lines: CInt, columns: CInt): CInt = extern
+
+  def wscrl(win: Ptr[WINDOW], n: CInt): CInt = extern
+
+  def wtimeout(win: Ptr[WINDOW], delay: CInt): Unit = extern
 }
