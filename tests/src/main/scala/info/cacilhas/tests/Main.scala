@@ -14,7 +14,7 @@ object Main extends App {
     window delay false
 
     window.clear()
-    window.print(5, 5)("Hello, World!!")
+    window.print(5, 5)(ncurses.version)
     window.refresh()
     Thread sleep 5000
 

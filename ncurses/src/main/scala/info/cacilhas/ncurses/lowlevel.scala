@@ -2,18 +2,15 @@ package info.cacilhas.ncurses
 
 import scala.scalanative.unsafe._
 
-@link ("ncurses")
+@link("ncurses")
 @extern
-@name("ncurses")
 private object lowlevel {
 
   type WINDOW = Ptr[CChar]
 
-  val NCURSES_VERSION_MAJOR: CInt = extern
-  val NCURSES_VERSION_MINOR: CInt = extern
-  val NCURSES_VERSION_PATCH: CInt = extern
-
   def cbreak(): CInt = extern
+
+  def curses_version(): CString = extern
 
   def echo(): CInt = extern
 
