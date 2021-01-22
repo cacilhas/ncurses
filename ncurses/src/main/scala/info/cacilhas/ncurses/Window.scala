@@ -6,24 +6,26 @@ import scala.scalanative.unsigned.UnsignedRichLong
 
 final class Window private(win: WINDOW) {
 
-  def attron(attr: Int, enable: Boolean = true): Unit = {
-    if (enable) lowlevel wattron  (win, attr)
-    else        lowlevel wattroff (win, attr)
-  }
+  assert(win != null, "could not initialise screen")
+
+  def attron(attr: Int, enable: Boolean = true): Int = {
+    if (enable) nassert(lowlevel wattron  (win, attr))
+    else        nassert(lowlevel wattroff (win, attr))
+  }.toTry.get
 
   def attroff(attr: Int): Unit = attron(attr, enable = false)
 
-  def clear(): Unit = lowlevel wclear win
+  def clear: Int = nassert(lowlevel wclear win).toTry.get
 
-  def delay(enable: Boolean): Unit = lowlevel nodelay (win, !enable)
+  def delay(enable: Boolean): Int = nassert(lowlevel nodelay (win, !enable)).toTry.get
 
-  def keypad(enable: Boolean): Unit = lowlevel keypad (win, enable)
+  def keypad(enable: Boolean): Int = nassert(lowlevel keypad (win, enable)).toTry.get
 
-  def print(x: Int, y: Int)(text: String): Unit = text.zipWithIndex foreach { case ch -> i =>
-    lowlevel mvwaddch (win, y,  x+i, ch.toLong.toULong)
+  def print(x: Int, y: Int)(text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
+    nassert(lowlevel mvwaddch (win, y,  x+i, ch.toLong.toULong)).toTry.get
   }
 
-  def refresh(): Unit = lowlevel wrefresh win
+  def refresh: Int = nassert(lowlevel wrefresh win).toTry.get
 }
 
 object Window {

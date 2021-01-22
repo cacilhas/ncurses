@@ -5,11 +5,14 @@ import scala.util.chaining.scalaUtilChainingOps
 
 final class Color private(val value: Int) extends AnyVal {
 
-  def init(red: Double, green: Double, blue: Double): Unit =
-    lowlevel init_color (%(value), %(red), %(green), %(blue))
+  def init(red: Double, green: Double, blue: Double): Int =
+    nassert(lowlevel init_color (%(value), %(red), %(green), %(blue))).toTry.get
 
   def pair(foreground: Color = this, background: Color = this): Color.Pair =
-    lowlevel init_pair (%(value), %(foreground.value), %(background.value)) pipe {_ => pair}
+    nassert(lowlevel init_pair (%(value), %(foreground.value), %(background.value))) match {
+      case Right(_)  => pair
+      case Left(exc) => throw exc
+    }
 
   def pair: Color.Pair = lowlevel COLOR_PAIR %(value)
 
@@ -27,7 +30,7 @@ object Color {
   def apply(value: Int, red: Double, green: Double, blue: Double): Color =
     apply(value) tap {_ init (red, green, blue)}
 
-  def start(): Unit = assert(_start == 0)
+  def start: Int = nassert(_start).toTry.get
 
   private lazy val _start: Int = lowlevel.start_color()
 

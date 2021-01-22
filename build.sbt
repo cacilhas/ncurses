@@ -10,8 +10,9 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
 )
 
-lazy val root = project in file(".") aggregate (ncurses, tests)
-lazy val ncurses = project in file("ncurses")
-lazy val tests = project in file("tests") dependsOn ncurses
+lazy val root     = project in file(".") aggregate (ncurses, tests)
+lazy val ncmacros = project in file("ncmacros")
+lazy val ncurses  = project in file("ncurses") dependsOn ncmacros
+lazy val tests    = project in file("tests") dependsOn ncurses
 
 addCommandAlias("test", "tests / run")

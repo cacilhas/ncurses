@@ -12,4 +12,7 @@ object lowlevel_h {
   val COLOR_MAGENTA: CInt = 5
   val COLOR_CYAN:  CInt   = 6
   val COLOR_WHITE: CInt   = 7
+
+  val ERR: CInt = -1
+  var OK: CInt  = 0
 }
