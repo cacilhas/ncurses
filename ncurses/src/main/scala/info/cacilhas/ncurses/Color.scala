@@ -34,12 +34,12 @@ object Color {
 
   private lazy val _start: Int = lowlevel.start_color()
 
-  lazy val Black: Color   = lowlevel_h.COLOR_BLACK
-  lazy val Red: Color     = lowlevel_h.COLOR_RED
-  lazy val Green: Color   = lowlevel_h.COLOR_GREEN
-  lazy val Yellow: Color  = lowlevel_h.COLOR_YELLOW
-  lazy val Blue: Color    = lowlevel_h.COLOR_BLUE
-  lazy val Magenta: Color = lowlevel_h.COLOR_MAGENTA
-  lazy val Cyan: Color    = lowlevel_h.COLOR_CYAN
-  lazy val White: Color   = lowlevel_h.COLOR_WHITE
+  lazy val Black: Color   = c_header.COLOR_BLACK
+  lazy val Red: Color     = c_header.COLOR_RED
+  lazy val Green: Color   = c_header.COLOR_GREEN
+  lazy val Yellow: Color  = c_header.COLOR_YELLOW
+  lazy val Blue: Color    = c_header.COLOR_BLUE
+  lazy val Magenta: Color = c_header.COLOR_MAGENTA
+  lazy val Cyan: Color    = c_header.COLOR_CYAN
+  lazy val White: Color   = c_header.COLOR_WHITE
 }
