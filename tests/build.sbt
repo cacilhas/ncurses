@@ -2,7 +2,7 @@ scalaVersion := "2.13.4"
 nativeLinkStubs := true
 enablePlugins(ScalaNativePlugin)
 
-name := "ncurses"
+name := "ncurses tests"
 organization := "info.cacilhas"
 version := "1.0.0"
 scalacOptions ++= Seq(
@@ -13,4 +13,4 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
 )
 
-libraryDependencies += "io.scalaland" %% "enumz" % "1.0.0"
+mainClass in Compile := Some("info.cacilhas.tests.Main")
