@@ -8,7 +8,9 @@ import scala.scalanative.unsigned.UnsignedRichLong
 
 final class Window private(win: Ptr[WINDOW]) {
 
-  assert(win != null, "could not initialise screen")
+  type callback = (Window, Any) => Int
+
+  assert(win != null, "could not initialise window")
 
   def attron(attr: Int, enable: Boolean = true): Int = {
     if (enable) nassert(lowlevel wattron  (win, attr))
@@ -29,6 +31,8 @@ final class Window private(win: Ptr[WINDOW]) {
 
   def clearok(enable: Boolean): Int = nassert(lowlevel clearok (win, enable)).toTry.get
 
+  def close(): Unit = lowlevel delwin win
+
   def crltobot: Int = nassert(lowlevel wcrltobot win).toTry.get
 
   def crltoeol: Int = nassert(lowlevel wcrltoeol win).toTry.get
@@ -46,6 +50,8 @@ final class Window private(win: Ptr[WINDOW]) {
   }
 
   def refresh: Int = nassert(lowlevel wrefresh win).toTry.get
+
+  def use(callback: callback, data: Any*): Int = ???
 }
 
 object Window {
