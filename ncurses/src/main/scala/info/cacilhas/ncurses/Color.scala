@@ -6,13 +6,15 @@ import scala.util.chaining.scalaUtilChainingOps
 
 final class Color private(val value: Int) extends AnyVal {
 
+  import Color.{CShortDouble, CShortInt}
+
   def content: (Double, Double, Double) = {
     val r = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
     val g = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
     val b = malloc(sizeof[Ptr[CShort]]).asInstanceOf[Ptr[CShort]]
 
     try {
-      nassert(lowlevel color_content (%(value), r, g, b)).toTry.get
+      nassert(lowlevel color_content (value.$, r, g, b))
       (!r / 1000.0, !g / 1000.0, !b / 1000.0)
 
     }
@@ -24,22 +26,25 @@ final class Color private(val value: Int) extends AnyVal {
   }
 
   def init(red: Double, green: Double, blue: Double): Int =
-    nassert(lowlevel init_color (%(value), %(red), %(green), %(blue))).toTry.get
+    nassert(lowlevel init_color (value.$, red.$, green.$, blue.$))
 
-  def pair(foreground: Color = this, background: Color = this): Color.Pair =
-    nassert(lowlevel init_pair (%(value), %(foreground.value), %(background.value))) match {
-      case Right(_)  => pair
-      case Left(exc) => throw exc
-    }
+  def pair(foreground: Color = this, background: Color = this): Color.Pair = {
+    nassert(lowlevel init_pair (value.$, foreground.value.$, background.value.$))
+    pair
+  }
 
-  def pair: Color.Pair = lowlevel.COLOR_PAIR(value).toShort
-
-  private def %(value: Double): CShort = (1000 * value).toShort
-
-  private def %(value: Int): CShort = value.toShort
+  def pair: Color.Pair = lowlevel.COLOR_PAIR(value).$
 }
 
 object Color {
+
+  implicit private class CShortDouble(val value: Double) extends AnyVal {
+    def $: CShort = (1000 * value).toShort
+  }
+
+  implicit private class CShortInt(val value: Int) extends AnyVal {
+    def $: CShort = value.toShort
+  }
 
   type Pair = Short
 
@@ -51,7 +56,7 @@ object Color {
   def changeable: Boolean = lowlevel.can_change_color()
 
   lazy val start: Int =
-    if (lowlevel.has_colors()) nassert(_start).toTry.get
+    if (lowlevel.has_colors()) nassert(_start)
     else throw new AssertionError("no colour support found")
 
   private lazy val _start: Int = lowlevel.start_color()

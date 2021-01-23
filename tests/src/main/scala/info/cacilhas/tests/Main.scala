@@ -9,7 +9,7 @@ object Main extends App {
 
   Using(Window.standardScreen) { window =>
     Color.start
-    ncurses cbreak false
+    ncurses cbreak true
     ncurses echo   false
     ncurses nl     false
     window  keypad true

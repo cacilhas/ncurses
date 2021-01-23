@@ -1,31 +1,29 @@
 package info.cacilhas
 
 import info.cacilhas.macros.NcursesAssertMacro
+import info.cacilhas.ncurses.c_header.ERR
 
 import scala.concurrent.duration.Duration
 import scala.scalanative.unsafe._
-import scala.util.Try
 
 package object ncurses {
 
   lazy val acs: Seq[Char]  = Option(lowlevel.acs_map) map {_.toSeq} getOrElse Nil map {_.toChar}
   lazy val version: String = fromCString(lowlevel.curses_version())
 
-  def cbreak(enable: Boolean): Throwable Either Int =
-    nassert(if (enable) lowlevel.cbreak() else lowlevel.nocbreak())
+  def cbreak(enable: Boolean): Int = if (enable) lowlevel.cbreak() else lowlevel.nocbreak()
 
   def baudrate: Int = lowlevel.baudrate()
 
-  def beep: Throwable Either Int = nassert(lowlevel.beep())
+  def beep: Int = lowlevel.beep()
 
-  def echo(enable: Boolean): Throwable Either Int =
-    nassert(if (enable) lowlevel.echo() else lowlevel.noecho())
+  def echo(enable: Boolean): Int = if (enable) lowlevel.echo() else lowlevel.noecho()
 
-  def endwin: Throwable Either Int = nassert(lowlevel.endwin())
+  def endwin: Int = lowlevel.endwin()
 
-  def flash: Throwable Either Int = nassert(lowlevel.flash())
+  def flash: Int = lowlevel.flash()
 
-  def flushinp: Throwable Either Int = nassert(lowlevel.flushinp())
+  def flushinp: Int = lowlevel.flushinp()
 
   def hasInsertDelete: InsertDeleteCapability = {
     if (lowlevel.has_ic())      InsertDeleteCapability.Yes
@@ -33,60 +31,54 @@ package object ncurses {
          else                   InsertDeleteCapability.No
   }
 
-  def keyname(key: Int): String = fromCString(lowlevel keyname key)
+  def keyname(key: Int): Option[String] = lowlevel keyname key match {
+    case null => None
+    case str  => Option(fromCString(str))
+  }
 
-  def napms(ms: Int): Throwable Either Int = nassert(lowlevel napms ms)
+  def napms(ms: Int): Int = lowlevel napms ms
 
-  def nl(enable: Boolean): Throwable Either Int =
-    nassert(if (enable) lowlevel.nl() else lowlevel.nonl())
+  def nl(enable: Boolean): Int = if (enable) lowlevel.nl() else lowlevel.nonl()
 
-  def curSet(visibility: CursorVisibility): Throwable Either Int =
-    nassert(lowlevel curs_set visibility.index)
+  def curSet(visibility: CursorVisibility): Int = lowlevel curs_set visibility.index
 
   def getch: Char = lowlevel.getch().toChar
 
-  def getstr: Throwable Either String = Zone { implicit zone: Zone =>
+  def getstr: Option[String] = Zone { implicit zone: Zone =>
     val str: CString = stackalloc[CChar](256)
-    nassert(lowlevel getstr str) match {
-      case Right(_)  => Right(fromCString(str))
-      case Left(exc) => Left(exc)
+    lowlevel getstr str match {
+      case ERR => None
+      case _   => Option(fromCString(str))
     }
   }
 
-  def raw(enable: Boolean = true): Throwable Either Int =
-    nassert(if (enable) lowlevel.raw() else lowlevel.noraw())
+  def raw(enable: Boolean = true): Int = if (enable) lowlevel.raw() else lowlevel.noraw()
 
-  def resetProgMode: Throwable Either Int = nassert(lowlevel.reset_prog_mode())
+  def resetProgMode: Int = lowlevel.reset_prog_mode()
 
-  def resetShellMode: Throwable Either Int = nassert(lowlevel.reset_shell_mode())
+  def resetShellMode: Int = lowlevel.reset_shell_mode()
 
-  def resetTTY: Throwable Either Int = nassert(lowlevel.resetty())
+  def resetTTY: Int = lowlevel.resetty()
 
-  def saveProgMode: Throwable Either Int = nassert(lowlevel.def_prog_mode())
+  def saveProgMode: Int = lowlevel.def_prog_mode()
 
-  def saveShellMode: Throwable Either Int = nassert(lowlevel.def_shell_mode())
+  def saveShellMode: Int = lowlevel.def_shell_mode()
 
-  def saveTTY: Throwable Either Int = nassert(lowlevel.savetty())
+  def saveTTY: Int = lowlevel.savetty()
 
-  def scrDump(filename: String): Throwable Either Int = Zone { implicit zone: Zone =>
-    nassert(lowlevel scr_dump toCString(filename))
+  def scrDump(filename: String): Int = Zone {implicit zone: Zone => lowlevel scr_dump toCString(filename)}
+
+  def scrRestore(filename: String): Int = Zone { implicit zone: Zone =>
+    lowlevel scr_restore toCString(filename)
   }
 
-  def scrRestore(filename: String): Throwable Either Int = Zone { implicit zone: Zone =>
-    nassert(lowlevel scr_restore toCString(filename))
-  }
+  def setterm(term: String): Int = Zone {implicit zone: Zone => lowlevel setterm toCString(term)}
 
-  def setterm(term: String): Throwable Either Int = Zone { implicit zone: Zone =>
-    nassert(lowlevel setterm toCString(term))
-  }
-
-  def sleep(dur: Duration): Throwable Either Int = napms(dur.toMillis.toInt)
+  def sleep(dur: Duration): Int = napms(dur.toMillis.toInt)
 
   def termname: Option[String] = Option(lowlevel.termname()) map {fromCString(_)}
 
   /*--------------------------------------------------------------------------*/
 
-  private[ncurses] def nassert[A](code: A): Throwable Either A = Try(_nassert(code)).toEither
-
-  private def _nassert[A](code: A): A = macro NcursesAssertMacro.impl
+  private[ncurses] def nassert[A](code: A): A = macro NcursesAssertMacro.impl
 }
