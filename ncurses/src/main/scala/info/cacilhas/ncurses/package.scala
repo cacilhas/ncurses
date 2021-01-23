@@ -1,12 +1,13 @@
 package info.cacilhas
 
 import info.cacilhas.macros.NcursesAssertMacro
-import info.cacilhas.ncurses.c_header.ERR
 
 import scala.concurrent.duration.Duration
 import scala.scalanative.unsafe._
 
 package object ncurses {
+
+  import c_header.ERR
 
   lazy val acs: Seq[Char]  = Option(lowlevel.acs_map) map {_.toSeq} getOrElse Nil map {_.toChar}
   lazy val version: String = fromCString(lowlevel.curses_version())

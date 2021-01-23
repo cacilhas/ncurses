@@ -9,9 +9,11 @@ object Main extends App {
 
   Using(Window.standardScreen) { window =>
     Color.start
+
     ncurses cbreak true
     ncurses echo   false
     ncurses nl     false
+
     window.keypad = true
     window.delay  = false
 
