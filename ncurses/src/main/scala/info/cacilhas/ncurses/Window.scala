@@ -79,17 +79,17 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def delete: Int = nassert(lowlevel wdelch win)
 
-  def delete(x: Int, y: Int): Int = nassert(lowlevel mvwdelch (win, y, x))
+  def delete(coord: Coord): Int = nassert(lowlevel mvwdelch (win, coord.y, coord.x))
 
   def deleteln: Int = nassert(lowlevel wdeleteln win)
 
   def erase: Int = nassert(lowlevel werase win)
 
-  def getch(x: Int, y: Int): Char = lowlevel.mvwgetch(win, y, x).toChar
+  def getch(coord: Coord): Char = lowlevel.mvwgetch(win, coord.y, coord.x).toChar
 
-  def getstr(x: Int, y: Int, len: Int): String = Zone { implicit zone: Zone =>
+  def getstr(coord: Coord, len: Int): String = Zone { implicit zone: Zone =>
     val str: CString = stackalloc[CChar]((len + 1).toUInt)
-    nassert(lowlevel mvwgetnstr (win, y, x, str, len))
+    nassert(lowlevel mvwgetnstr (win, coord.y, coord.x, str, len))
     fromCString(str)
   }
 
@@ -97,20 +97,20 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def hardwareInsertDelete_=(enable: Boolean): Int = nassert(lowlevel idlok (win, enable))
 
-  def hline(ch: Char, x: Int, y: Int, width: Int): Int = hline(ch.toLong, x, y, width)
+  def hline(ch: Char, coord: Coord, width: Int): Int = hline(ch.toLong, coord, width)
 
-  def hline(ch: Long, x: Int, y: Int, width: Int): Int = hline(ch.toULong, x, y, width)
+  def hline(ch: Long, coord: Coord, width: Int): Int = hline(ch.toULong, coord, width)
 
-  def hline(ch: UWord, x: Int, y: Int, width: Int): Int =
-    nassert(lowlevel mvwhline (win, y, x, ch, width))
+  def hline(ch: UWord, coord: Coord, width: Int): Int =
+    nassert(lowlevel mvwhline (win, coord.y, coord.x, ch, width))
 
   def insdelln(lines: Int): Int = nassert(lowlevel winsdelln (win, lines))
 
   def insertln: Int = nassert(lowlevel winsertln win)
 
-  def instr(x: Int, y: Int, len: Int): String = Zone { implicit zone: Zone =>
+  def instr(coord: Coord, len: Int): String = Zone { implicit zone: Zone =>
     val str: CString = stackalloc[CChar]((len + 1).toUInt)
-    nassert(lowlevel mvwinnstr (win, y, x, str, len))
+    nassert(lowlevel mvwinnstr (win, coord.y, coord.x, str, len))
     fromCString(str)
   }
 
@@ -130,12 +130,12 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def overlay(dest: Window): Int = nassert(lowlevel overlay (this.win, dest.win))
 
-  def move(x: Int, y: Int): Int = nassert(lowlevel wmove (win, y, x))
+  def move(coord: Coord): Int = nassert(lowlevel wmove (win, coord.y, coord.x))
 
   def pad: Boolean = lowlevel is_pad win
 
-  def print(x: Int, y: Int)(text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
-    nassert(lowlevel mvwaddch (win, y,  x+i, ch.toLong.toULong))
+  def print(coord: Coord, text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
+    nassert(lowlevel mvwaddch (win, coord.y,  coord.x+i, ch.toLong.toULong))
   }
 
   def put(fp: Ptr[FILE]): Int = nassert(lowlevel putwin (win, fp))
@@ -144,7 +144,7 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def refresh: Int = nassert(lowlevel wrefresh win)
 
-  def resize(width: Int, height: Int): Int = nassert(lowlevel wresize (win, height, width))
+  def resize(size: Size): Int = nassert(lowlevel wresize (win, size.height, size.width))
 
   def right: Int = lowlevel getmaxx win
 
@@ -180,12 +180,12 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def use(callback: callback, data: Any*): Int = ???
 
-  def vline(ch: Char, x: Int, y: Int, height: Int): Int = vline(ch.toLong, x, y, height)
+  def vline(ch: Char, coord: Coord, height: Int): Int = vline(ch.toLong, coord, height)
 
-  def vline(ch: Long, x: Int, y: Int, height: Int): Int = vline(ch.toULong, x, y, height)
+  def vline(ch: Long, coord: Coord, height: Int): Int = vline(ch.toULong, coord, height)
 
-  def vline(ch: UWord, x: Int, y: Int, height: Int): Int =
-    nassert(lowlevel mvwvline (win, y, x, ch, height))
+  def vline(ch: UWord, coord: Coord, height: Int): Int =
+    nassert(lowlevel mvwvline (win, coord.y, coord.x, ch, height))
 }
 
 object Window {
@@ -196,10 +196,10 @@ object Window {
 
   lazy val standardScreen: Window = getInstance(lowlevel.initscr())
 
-  def apply(width: Int, height: Int, x: Int, y: Int): Window =
-    getInstance(lowlevel newwin (height, width, y, x))
+  def apply(size: Size, coord: Coord): Window =
+    getInstance(lowlevel newwin (size.height, size.width, coord.y, coord.x))
 
   def get(fp: Ptr[FILE]): Window = getInstance(lowlevel getwin fp)
 
-  def pad(width: Int, height: Int): Window = getInstance(lowlevel newpad (height, width))
+  def pad(size: Size): Window = getInstance(lowlevel newpad (size.height, size.width))
 }

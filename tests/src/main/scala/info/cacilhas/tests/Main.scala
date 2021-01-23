@@ -3,6 +3,7 @@ package info.cacilhas.tests
 import info.cacilhas.ncurses
 import info.cacilhas.ncurses.CursorVisibility.Invisible
 import info.cacilhas.ncurses.{Color, Window}
+import info.cacilhas.ncurses.Implicits._
 
 import scala.concurrent.duration._
 import scala.util.Using
@@ -25,11 +26,10 @@ object Main extends App {
       window attron Color.Green.pair(foreground = Color.Magenta)
       window box (horizontal = '#', vertical = '*')
       window attron Color.Cyan.pair(background = Color.Black)
-      window.print(5, 5)(ncurses.version)
+      window.print(5\\5, ncurses.version)
 
-      window move (0, 0)
-      Using(Window(width = 17, height = 5,
-                   x = 10, y = 7)) { subwin =>
+      window move (0\\0)
+      Using(Window(17<>5, 10\\7)) { subwin =>
 
         val gray = Color(101, red = 0.25, green = 0.25, blue = 0.25)
         gray.pair()
@@ -38,12 +38,12 @@ object Main extends App {
         subwin.background = gray.pair
         subwin.clear
         subwin attron Color.Green.pair
-        subwin box (horizontal = 0, vertical = 0)
+        subwin box (0, 0)
         subwin overlay window
         subwin.refresh
 
         window attron Color(100, red = 1, green = 0.5, blue = 0).pair(background = gray)
-        window.print(12, 9)("Hello, World!")
+        window.print(12\\9, "Hello, World!")
 
         window.refresh
         while (running) ncurses sleep 100.millis
