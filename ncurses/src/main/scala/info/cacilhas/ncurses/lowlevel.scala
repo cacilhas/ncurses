@@ -55,6 +55,22 @@ private object lowlevel {
 
   def getch(): CInt = extern
 
+  def getbegx(win: Ptr[WINDOW]): CInt = extern
+
+  def getbegy(win: Ptr[WINDOW]): CInt = extern
+
+  def getcurx(win: Ptr[WINDOW]): CInt = extern
+
+  def getcury(win: Ptr[WINDOW]): CInt = extern
+
+  def getmaxx(win: Ptr[WINDOW]): CInt = extern
+
+  def getmaxy(win: Ptr[WINDOW]): CInt = extern
+
+  def getparx(win: Ptr[WINDOW]): CInt = extern
+
+  def getpary(win: Ptr[WINDOW]): CInt = extern
+
   def getstr(str: CString): CInt = extern
 
   def getwin(filep: Ptr[FILE]): Ptr[WINDOW] = extern
@@ -75,6 +91,26 @@ private object lowlevel {
 
   def initscr(): Ptr[WINDOW] = extern
 
+  def is_cleared(win: Ptr[WINDOW]): CBool = extern
+
+  def is_idlok(win: Ptr[WINDOW]): CBool = extern
+
+  def is_immedok(win: Ptr[WINDOW]): CBool = extern
+
+  def is_keypad(win: Ptr[WINDOW]): CBool = extern
+
+  def is_leaveok(win: Ptr[WINDOW]): CBool = extern
+
+  def is_nodelay(win: Ptr[WINDOW]): CBool = extern
+
+  def is_notimeout(win: Ptr[WINDOW]): CBool = extern
+
+  def is_pad(win: Ptr[WINDOW]): CBool = extern
+
+  def is_scrollok(win: Ptr[WINDOW]): CBool = extern
+
+  def is_subwin(win: Ptr[WINDOW]): CBool = extern
+
   def is_linetouched(win: Ptr[WINDOW], line: CInt): CBool = extern
 
   def is_wintouched(win: Ptr[WINDOW]): CBool = extern
@@ -82,6 +118,8 @@ private object lowlevel {
   def keyname(c: CInt): CString = extern
 
   def keypad(win: Ptr[WINDOW], enable: CBool): CInt = extern
+
+  def leaveok(win: Ptr[WINDOW], enabled: CBool): CInt = extern
 
   def mvwaddch(win: Ptr[WINDOW], y: CInt, x: CInt, ch: UWord): CInt = extern
 
@@ -157,7 +195,11 @@ private object lowlevel {
 
   def untouchwin(win: Ptr[WINDOW]): CInt = extern
 
+  def use_env(b: CBool): Unit = extern
+
   def use_screen(scr: Ptr[SCREEN], cb: NCURSES_SCREEN_CB, data: Ptr[Byte]): CInt = extern
+
+  def use_tioctl(b: CBool): Unit = extern
 
   def use_window(win: Ptr[WINDOW], cb: NCURSES_WINDOW_CB, data: Ptr[Byte]): CInt = extern
 
@@ -177,13 +219,15 @@ private object lowlevel {
 
   def wdeleteln(win: Ptr[WINDOW]): CInt = extern
 
+  def werase(win: Ptr[WINDOW]): CInt = extern
+
   def wgetch(win: Ptr[WINDOW]): CInt = extern
 
   def winsdelln(win: Ptr[WINDOW], n: CInt): CInt = extern
 
   def winsertln(win: Ptr[WINDOW]): CInt = extern
 
-  def werase(win: Ptr[WINDOW]): CInt = extern
+  def wmove(win: Ptr[WINDOW], y: CInt, x: CInt): CInt = extern
 
   def wrefresh(win: Ptr[WINDOW]): CInt = extern
 

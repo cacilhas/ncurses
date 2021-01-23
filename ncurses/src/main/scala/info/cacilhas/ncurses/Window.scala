@@ -21,7 +21,11 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def attroff(attr: Int): Unit = attron(attr, enable = false)
 
-  def autorefresch(enable: Boolean): Int = nassert(lowlevel immedok (win, enable))
+  def autorefresh: Boolean = lowlevel is_immedok win
+
+  def autorefresh_=(enable: Boolean): Int = nassert(lowlevel immedok (win, enable))
+
+  def bottom: Int = lowlevel getmaxy win
 
   def box(horizontal: Char, vertical: Char): Int =
     nassert(lowlevel box (win, vertical.toLong.toULong, horizontal.toLong.toULong))
@@ -31,9 +35,9 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def clear: Int = nassert(lowlevel wclear win)
 
-  def clearok: Int = clearok(true)
+  def clearok: Boolean = lowlevel is_cleared win
 
-  def clearok(enable: Boolean): Int = nassert(lowlevel clearok (win, enable))
+  def clearok_=(enable: Boolean): Int = nassert(lowlevel clearok (win, enable))
 
   def close(): Unit = lowlevel delwin win
 
@@ -41,7 +45,11 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def crltoeol: Int = nassert(lowlevel wcrltoeol win)
 
-  def delay(enable: Boolean): Int = nassert(lowlevel nodelay (win, !enable))
+  def cursor: (Int, Int) = (lowlevel getcurx win, lowlevel getcury win)
+
+  def delay: Boolean = !lowlevel.is_nodelay(win)
+
+  def delay_=(enable: Boolean): Int = nassert(lowlevel nodelay (win, !enable))
 
   def delete: Int = nassert(lowlevel wdelch win)
 
@@ -61,7 +69,9 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
     fromCString(str)
   }
 
-  def hardwareInsertDelete(enable: Boolean): Int = nassert(lowlevel idlok (win, enable))
+  def hardwareInsertDelete: Boolean = lowlevel is_idlok win
+
+  def hardwareInsertDelete_=(enable: Boolean): Int = nassert(lowlevel idlok (win, enable))
 
   def hline(ch: Char, x: Int, y: Int, width: Int): Int =
     nassert(lowlevel mvwhline (win, y, x, ch.toLong.toULong, width))
@@ -76,14 +86,25 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
     fromCString(str)
   }
 
+  def keypad: Boolean = lowlevel is_keypad win
+
+  def keypad_=(enable: Boolean): Int = nassert(lowlevel keypad (win, enable))
+
+  def leaveok: Boolean = lowlevel is_leaveok win
+
+  def leaveok_=(enable: Boolean): Int = nassert(lowlevel leaveok (win, enable))
+
+  def left: Int = lowlevel getbegx win
+
+  def left(relative: Boolean): Int = if (relative) lowlevel getparx win else left
+
   def linetouched(line: Int): Boolean = lowlevel is_linetouched (win, line)
 
-  def vline(ch: Char, x: Int, y: Int, height: Int): Int =
-    nassert(lowlevel mvwvline (win, y, x, ch.toLong.toULong, height))
-
-  def keypad(enable: Boolean): Int = nassert(lowlevel keypad (win, enable))
-
   def overlay(dest: Window): Int = nassert(lowlevel overlay (this.win, dest.win))
+
+  def move(x: Int, y: Int): Int = nassert(lowlevel wmove (win, y, x))
+
+  def pad: Boolean = lowlevel is_pad win
 
   def print(x: Int, y: Int)(text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
     nassert(lowlevel mvwaddch (win, y,  x+i, ch.toLong.toULong))
@@ -95,17 +116,29 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def refresh: Int = nassert(lowlevel wrefresh win)
 
-  def scroll(lines: Int): Int = nassert(lowlevel wscrl (win, lines))
-
-  def scrollok(enable: Boolean): Int =
-    if (enable) {hardwareInsertDelete(true); nassert(lowlevel scrollok (win, true))}
-    else nassert(lowlevel scrollok (win, false))
-
   def resize(width: Int, height: Int): Int = nassert(lowlevel wresize (win, height, width))
 
-  def timeout(enable: Boolean): Int = nassert(lowlevel notimeout (win, !enable))
+  def right: Int = lowlevel getmaxx win
 
-  def timeout(delay: Duration): Unit = lowlevel wtimeout (win, delay.toMillis.toInt)
+  def scroll(lines: Int): Int = nassert(lowlevel wscrl (win, lines))
+
+  def scrollok: Boolean = lowlevel is_scrollok win
+
+  def scrollok_=(enable: Boolean): Int =
+    if (enable) {hardwareInsertDelete = true; nassert(lowlevel scrollok (win, true))}
+    else nassert(lowlevel scrollok (win, false))
+
+  def subwin: Boolean = lowlevel is_subwin win
+
+  def timeout: Boolean = !lowlevel.is_notimeout(win)
+
+  def timeout_=(enable: Boolean): Int = nassert(lowlevel notimeout (win, !enable))
+
+  def timeout_=(delay: Duration): Unit = lowlevel wtimeout (win, delay.toMillis.toInt)
+
+  def top: Int = lowlevel getbegy win
+
+  def top(relative: Boolean): Int = if (relative) lowlevel getpary win else top
 
   def touchline(line: Int, count: Int = 1): Int = nassert(lowlevel touchline (win, line, count))
 
@@ -118,6 +151,9 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
   def untouchline(line: Int, count: Int = 1): Int = nassert(lowlevel touchline (win, line, count))
 
   def use(callback: callback, data: Any*): Int = ???
+
+  def vline(ch: Char, x: Int, y: Int, height: Int): Int =
+    nassert(lowlevel mvwvline (win, y, x, ch.toLong.toULong, height))
 }
 
 object Window {

@@ -78,6 +78,10 @@ package object ncurses {
 
   def termname: Option[String] = Option(lowlevel.termname()) map {fromCString(_)}
 
+  def useEnv(enable: Boolean): Unit = lowlevel use_env enable
+
+  def useTioctl(enable: Boolean): Unit = lowlevel use_tioctl enable
+
   /*--------------------------------------------------------------------------*/
 
   private[ncurses] def nassert[A](code: A): A = macro NcursesAssertMacro.impl
