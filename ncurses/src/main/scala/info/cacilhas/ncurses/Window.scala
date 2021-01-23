@@ -37,20 +37,15 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def bottom: Int = lowlevel getmaxy win
 
-  def box(horizontal: Char, vertical: Char): Int = box(horizontal.toLong, vertical.toLong)
+  def box: Int = ???
 
-  def box(horizontal: Char, vertical: UWord): Int = box(horizontal.toLong, vertical)
+  def box_=(idx: Int): Int = {
+    try box = BorderPair predefs idx
+    catch {case _: IndexOutOfBoundsException => throw new IllegalArgumentException (s"invalid index $idx")}
+  }
 
-  def box(horizontal: UWord, vertical: Char): Int = box(horizontal, vertical.toLong)
-
-  def box(horizontal: Long, vertical: Long): Int = box(horizontal.toULong, vertical.toULong)
-
-  def box(horizontal: Long, vertical: UWord): Int = box(horizontal.toULong, vertical)
-
-  def box(horizontal: UWord, vertical: Long): Int = box(horizontal, vertical.toULong)
-
-  def box(horizontal: UWord, vertical: UWord): Int =
-    nassert(lowlevel box (win, vertical, horizontal))
+  def box_=(borders: BorderPair): Int =
+    nassert(lowlevel box (win, borders.vertical, borders.horizontal))
 
   def chgat(idx: Int, attr: Char, color: Color): Int = chgat(idx, attr.toLong, color)
 
