@@ -207,6 +207,10 @@ private object lowlevel {
 
   def wattron(win: Ptr[WINDOW], attr: CInt): CInt = extern
 
+  def wbkgd(win: Ptr[WINDOW], color: UWord): CInt = extern
+
+  def wbkgdset(win: Ptr[WINDOW], color: UWord): CInt = extern
+
   def wchgat(win: Ptr[WINDOW], n: CInt, attr: UWord, color: CShort, opts: Ptr[Byte]): CInt = extern
 
   def wclear(win: Ptr[WINDOW]): CInt = extern

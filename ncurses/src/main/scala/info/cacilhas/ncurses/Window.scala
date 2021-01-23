@@ -5,7 +5,7 @@ import info.cacilhas.ncurses.lowlevel.WINDOW
 import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent.duration.Duration
 import scala.scalanative.libc.stdio.FILE
-import scala.scalanative.unsafe.{CChar, CString, Ptr, Zone, fromCString, stackalloc}
+import scala.scalanative.unsafe.{CChar, CString, Ptr, UWord, Zone, fromCString, stackalloc}
 import scala.scalanative.unsigned.UnsignedRichLong
 
 final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
@@ -25,13 +25,39 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def autorefresh_=(enable: Boolean): Int = nassert(lowlevel immedok (win, enable))
 
+  def background: Char = lowlevel.getbkgd(win).toChar
+
+  def background_=(attr: Char): Int = background = attr.toLong
+
+  def background_=(attr: Long): Int = background = attr.toULong
+
+  def background_=(attr: UWord): Int = nassert(lowlevel wbkgd (win, attr))
+
+  def background_=(attr: Color.Pair): Int = background = attr.toChar
+
   def bottom: Int = lowlevel getmaxy win
 
-  def box(horizontal: Char, vertical: Char): Int =
-    nassert(lowlevel box (win, vertical.toLong.toULong, horizontal.toLong.toULong))
+  def box(horizontal: Char, vertical: Char): Int = box(horizontal.toLong, vertical.toLong)
 
-  def chgat(idx: Int, attr: Char, color: Color): Int =
-    nassert(lowlevel wchgat (win, idx, attr.toLong.toULong, color.pair, null))
+  def box(horizontal: Char, vertical: UWord): Int = box(horizontal.toLong, vertical)
+
+  def box(horizontal: UWord, vertical: Char): Int = box(horizontal, vertical.toLong)
+
+  def box(horizontal: Long, vertical: Long): Int = box(horizontal.toULong, vertical.toULong)
+
+  def box(horizontal: Long, vertical: UWord): Int = box(horizontal.toULong, vertical)
+
+  def box(horizontal: UWord, vertical: Long): Int = box(horizontal, vertical.toULong)
+
+  def box(horizontal: UWord, vertical: UWord): Int =
+    nassert(lowlevel box (win, vertical, horizontal))
+
+  def chgat(idx: Int, attr: Char, color: Color): Int = chgat(idx, attr.toLong, color)
+
+  def chgat(idx: Int, attr: Long, color: Color): Int = chgat(idx, attr.toULong, color)
+
+  def chgat(idx: Int, attr: UWord, color: Color): Int =
+    nassert(lowlevel wchgat (win, idx, attr, color.pair, null))
 
   def clear: Int = nassert(lowlevel wclear win)
 
@@ -59,8 +85,6 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def erase: Int = nassert(lowlevel werase win)
 
-  def getbkgd: Char = lowlevel.getbkgd(win).toChar
-
   def getch(x: Int, y: Int): Char = lowlevel.mvwgetch(win, y, x).toChar
 
   def getstr(x: Int, y: Int, len: Int): String = Zone { implicit zone: Zone =>
@@ -73,8 +97,12 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def hardwareInsertDelete_=(enable: Boolean): Int = nassert(lowlevel idlok (win, enable))
 
-  def hline(ch: Char, x: Int, y: Int, width: Int): Int =
-    nassert(lowlevel mvwhline (win, y, x, ch.toLong.toULong, width))
+  def hline(ch: Char, x: Int, y: Int, width: Int): Int = hline(ch.toLong, x, y, width)
+
+  def hline(ch: Long, x: Int, y: Int, width: Int): Int = hline(ch.toULong, x, y, width)
+
+  def hline(ch: UWord, x: Int, y: Int, width: Int): Int =
+    nassert(lowlevel mvwhline (win, y, x, ch, width))
 
   def insdelln(lines: Int): Int = nassert(lowlevel winsdelln (win, lines))
 
@@ -152,8 +180,12 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def use(callback: callback, data: Any*): Int = ???
 
-  def vline(ch: Char, x: Int, y: Int, height: Int): Int =
-    nassert(lowlevel mvwvline (win, y, x, ch.toLong.toULong, height))
+  def vline(ch: Char, x: Int, y: Int, height: Int): Int = vline(ch.toLong, x, y, height)
+
+  def vline(ch: Long, x: Int, y: Int, height: Int): Int = vline(ch.toULong, x, y, height)
+
+  def vline(ch: UWord, x: Int, y: Int, height: Int): Int =
+    nassert(lowlevel mvwvline (win, y, x, ch, height))
 }
 
 object Window {
