@@ -11,28 +11,28 @@ object Implicits {
   }
 
   implicit class BorderChar(val value: Char) extends AnyVal {
-    def -|(other: Char): BorderPair  = value.toLong -| other.toLong
-    def -|(other: Long): BorderPair  = value.toLong -| other
-    def -|(other: UWord): BorderPair = value.toLong -| other
-    def |-(other: Char): BorderPair  = value.toLong |- other.toLong
-    def |-(other: Long): BorderPair  = value.toLong |- other
-    def |-(other: UWord): BorderPair = value.toLong |- other
+    def -|(other: Char): BorderPair  = value.toULong -| other.toULong
+    def -|(other: Long): BorderPair  = value.toULong -| other
+    def -|(other: UWord): BorderPair = value.toULong -| other
+    def |-(other: Char): BorderPair  = value.toULong |- other.toULong
+    def |-(other: Long): BorderPair  = value.toULong |- other
+    def |-(other: UWord): BorderPair = value.toULong |- other
   }
 
   implicit class BorderLong(val value: Long) extends AnyVal {
-    def -|(other: Char): BorderPair  = value -| other.toLong
+    def -|(other: Char): BorderPair  = value -| other.toULong
     def -|(other: Long): BorderPair  = value.toULong -| other.toULong
     def -|(other: UWord): BorderPair = value.toULong -| other
-    def |-(other: Char): BorderPair  = value |- other.toLong
+    def |-(other: Char): BorderPair  = value |- other.toULong
     def |-(other: Long): BorderPair  = value.toULong |- other.toULong
     def |-(other: UWord): BorderPair = value.toULong |- other
   }
 
   implicit class BorderUWord(val value: UWord) extends AnyRef {
-    def -|(other: Char): BorderPair  = value -| other.toLong
+    def -|(other: Char): BorderPair  = value -| other.toULong
     def -|(other: Long): BorderPair  = value -| other.toULong
     def -|(other: UWord): BorderPair = BorderPair(horizontal = value, vertical = other)
-    def |-(other: Char): BorderPair  = value |- other.toLong
+    def |-(other: Char): BorderPair  = value |- other.toULong
     def |-(other: Long): BorderPair  = value |- other.toULong
     def |-(other: UWord): BorderPair = BorderPair(vertical = value, horizontal = other)
   }

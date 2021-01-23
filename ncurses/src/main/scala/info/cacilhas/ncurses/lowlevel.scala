@@ -3,7 +3,7 @@ package info.cacilhas.ncurses
 import scala.scalanative.libc.stdio.FILE
 import scala.scalanative.unsafe._
 
-@link("ncurses")
+@link("ncursesw")
 @extern
 private object lowlevel {
 
@@ -184,6 +184,10 @@ private object lowlevel {
   def setterm(term: CString): CInt = extern
 
   def start_color(): CInt = extern
+
+  def subpad(orig: Ptr[WINDOW], nlines: CInt, ncols: CInt, begin_y: CInt, begin_x: CInt): Ptr[WINDOW] = extern
+
+  def subwin(orig: Ptr[WINDOW], nlines: CInt, ncols: CInt, begin_y: CInt, begin_x: CInt): Ptr[WINDOW] = extern
 
   def termname(): CString = extern
 

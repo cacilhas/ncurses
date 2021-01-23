@@ -10,46 +10,55 @@ import scala.util.Using
 
 object Main extends App {
 
-  try {
-    Using(Window.standardScreen) { window =>
-      Color.start
+  val res = Using(Window.standardScreen) { window =>
+    Color.start
 
-      ncurses cbreak true      // catch each pressed key
-      ncurses echo   false     // no echo in screen
-      ncurses nl     false     // no rolling
-      ncurses curSet Invisible // hide cursor
+    val orange = 1##0.5##0        color 100
+    val gray   = 0.25##0.25##0.25 color 101
+    val bg     = 0##0##0          color 102 pair (foreground = gray)
 
-      window.keypad = true  // enable capture Fn
-      window.delay  = false // no delay
+    ncurses cbreak true      // catch each pressed key
+    ncurses echo   false     // no echo in screen
+    ncurses nl     false     // no rolling
+    ncurses curSet Invisible // hide cursor
 
-      window.clear
-      window attron Color.Green.pair(foreground = Color.Magenta)
-      window.box = 0 // '#'-|'*'
-      window attron Color.Cyan.pair(background = Color.Black)
-      window.print(5\\5, ncurses.version)
+    window.keypad     = true     // enable capture Fn
+    window.delay      = false    // no delay
+    window.background = '.' | bg // dotted background
+    window.clear
 
-      window move 0\\0
-      Using(Window(17<>5, 10\\7)) { subwin =>
+    val version  = ncurses.version
+    val width    = window.right
+    val height   = window.bottom
+    val versionX = (width - version.length) / 2
+    val versionY = (height - 7) / 2
+    window attron Color.Green.pair(foreground = Color.Magenta)
+    window.box = '#'-|'*'
+    window attron Color.Cyan.pair(background = Color.Black)
+    window.print(versionX\\versionY, version)
 
-        val orange = 1##0.5##0 color 100
-        val gray = 0.25##0.25##0.25 color 101
+    val message  = "Hello, World!!"
+    val subwinWi = message.length + 4
+    val subwinX  = (width - subwinWi) / 2
+    val subwinY  = versionY + 2
+    Using(window subwin (subwinWi<>5, subwinX\\subwinY)) { subwin =>
 
-        // FIXME: not working 😢
-        subwin.background = gray.pair()
-        subwin.clear
-        subwin attron Color.Green.pair
-        subwin.box = 1
-        subwin overlay window
-        subwin.refresh
+      subwin.clear
+      subwin.background = gray.pair()
+      subwin attron Color.Green.pair
+      subwin.box = 1
+      subwin.refresh
 
-        window attron orange.pair(background = gray)
-        window.print(12\\9, "Hello, World!")
+      subwin attron orange.pair(background = gray)
+      subwin.print(2\\2, message)
+      subwin.refresh
 
-        window.refresh
-        while (running) ncurses sleep 100.millis
-      }
-    }.flatten.get
-  } finally ncurses.endwin
+      window.refresh
+      while (running) ncurses sleep 100.millis
+    }
+  }.flatten
+  ncurses.endwin
+  res.get
 
   def running: Boolean = ncurses.getch match {
     case 27 | 'Q' | 'q' => false

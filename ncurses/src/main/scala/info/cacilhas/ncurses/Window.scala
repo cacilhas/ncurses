@@ -27,13 +27,13 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def background: Char = lowlevel.getbkgd(win).toChar
 
-  def background_=(attr: Char): Int = background = attr.toLong
+  def background_=(attr: Char): Int = background = attr.toULong
 
   def background_=(attr: Long): Int = background = attr.toULong
 
-  def background_=(attr: UWord): Int = nassert(lowlevel wbkgd (win, attr))
-
   def background_=(attr: Color.Pair): Int = background = attr.toChar
+
+  def background_=(attr: UWord): Int = nassert(lowlevel wbkgd (win, attr))
 
   def bottom: Int = lowlevel getmaxy win
 
@@ -47,7 +47,7 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
   def box_=(borders: BorderPair): Int =
     nassert(lowlevel box (win, borders.vertical, borders.horizontal))
 
-  def chgat(idx: Int, attr: Char, color: Color): Int = chgat(idx, attr.toLong, color)
+  def chgat(idx: Int, attr: Char, color: Color): Int = chgat(idx, attr.toULong, color)
 
   def chgat(idx: Int, attr: Long, color: Color): Int = chgat(idx, attr.toULong, color)
 
@@ -92,7 +92,7 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def hardwareInsertDelete_=(enable: Boolean): Int = nassert(lowlevel idlok (win, enable))
 
-  def hline(ch: Char, coord: Coord, width: Int): Int = hline(ch.toLong, coord, width)
+  def hline(ch: Char, coord: Coord, width: Int): Int = hline(ch.toULong, coord, width)
 
   def hline(ch: Long, coord: Coord, width: Int): Int = hline(ch.toULong, coord, width)
 
@@ -108,6 +108,10 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
     nassert(lowlevel mvwinnstr (win, coord.y, coord.x, str, len))
     fromCString(str)
   }
+
+  def isPad: Boolean = lowlevel is_pad win
+
+  def isSubwin: Boolean = lowlevel is_subwin win
 
   def keypad: Boolean = lowlevel is_keypad win
 
@@ -127,10 +131,8 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def move(coord: Coord): Int = nassert(lowlevel wmove (win, coord.y, coord.x))
 
-  def pad: Boolean = lowlevel is_pad win
-
   def print(coord: Coord, text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
-    nassert(lowlevel mvwaddch (win, coord.y,  coord.x+i, ch.toLong.toULong))
+    nassert(lowlevel mvwaddch (win, coord.y,  coord.x+i, ch.toULong))
   }
 
   def put(fp: Ptr[FILE]): Int = nassert(lowlevel putwin (win, fp))
@@ -151,7 +153,11 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
     if (enable) {hardwareInsertDelete = true; nassert(lowlevel scrollok (win, true))}
     else nassert(lowlevel scrollok (win, false))
 
-  def subwin: Boolean = lowlevel is_subwin win
+  def subpad(size: Size, coord: Coord): Window =
+    Window getInstance nassert(lowlevel subpad (win, size.height, size.width, coord.y, coord.x))
+
+  def subwin(size: Size, coord: Coord): Window =
+    Window getInstance nassert(lowlevel subwin (win, size.height, size.width, coord.y, coord.x))
 
   def timeout: Boolean = !lowlevel.is_notimeout(win)
 
@@ -175,7 +181,7 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def use(callback: callback, data: Any*): Int = ???
 
-  def vline(ch: Char, coord: Coord, height: Int): Int = vline(ch.toLong, coord, height)
+  def vline(ch: Char, coord: Coord, height: Int): Int = vline(ch.toULong, coord, height)
 
   def vline(ch: Long, coord: Coord, height: Int): Int = vline(ch.toULong, coord, height)
 
