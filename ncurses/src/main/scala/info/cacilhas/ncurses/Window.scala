@@ -131,8 +131,12 @@ final class Window private(private val win: Ptr[WINDOW]) extends AutoCloseable {
 
   def move(coord: Coord): Int = nassert(lowlevel wmove (win, coord.y, coord.x))
 
+  def print(coord: Coord, ch: Char): Int = nassert(lowlevel mvwaddch (win, coord.y,  coord.x, ch.toULong))
+
+  def print(coord: Coord, ch: Long): Int = nassert(lowlevel mvwaddch (win, coord.y,  coord.x, ch.toULong))
+
   def print(coord: Coord, text: String): Seq[Int] = text.zipWithIndex map { case ch -> i =>
-    nassert(lowlevel mvwaddch (win, coord.y,  coord.x+i, ch.toULong))
+    print(Coord(x = coord.x + i, y = coord.y), ch)
   }
 
   def put(fp: Ptr[FILE]): Int = nassert(lowlevel putwin (win, fp))
